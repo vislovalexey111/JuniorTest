@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Cube : MonoBehaviour
 {
+    // Individual parameters for each cube that are assigned by Cube spawner
     [SerializeField]
     private float moveSpeed;
     public float MoveSpeed
@@ -26,11 +27,12 @@ public class Cube : MonoBehaviour
         set { startPosition = value; }
     }
 
+    // This action will be called to return object to pool
     public static Action<GameObject> OnDistanceEnd;
 
     private void FixedUpdate()
     {
-        transform.Translate(Vector3.forward * MoveSpeed * Time.deltaTime);
+        transform.Translate(MoveSpeed * Time.deltaTime * Vector3.forward);
 
         if (Vector3.Distance(StartPosition, transform.position) >= Distance && OnDistanceEnd != null)
         {
