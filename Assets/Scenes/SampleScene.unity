@@ -305,19 +305,7 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 138813507}
-        m_TargetAssemblyTypeName: CubeSpawner, Assembly-CSharp
-        m_MethodName: ChangeSpeed
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -556,9 +544,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73e3dd73652dc764387bdd47b8ccebb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiSpeed: {fileID: 54486885}
-  _uiSpawnTime: {fileID: 1480841557}
-  _uiDistance: {fileID: 889901363}
+  _buttonStart: {fileID: 1106336658}
+  _buttonStop: {fileID: 652141778}
+  _inputFieldSpeed: {fileID: 54486885}
+  _inputFieldSpawnTime: {fileID: 1480841557}
+  _inputFieldDistance: {fileID: 889901363}
 --- !u!4 &138813508
 Transform:
   m_ObjectHideFlags: 0
@@ -1376,19 +1366,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 652141779}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 138813507}
-        m_TargetAssemblyTypeName: CubeSpawner, Assembly-CSharp
-        m_MethodName: StopSpawning
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &652141779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1946,19 +1924,7 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 138813507}
-        m_TargetAssemblyTypeName: CubeSpawner, Assembly-CSharp
-        m_MethodName: ChangeDistance
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -2569,19 +2535,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1106336659}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 138813507}
-        m_TargetAssemblyTypeName: CubeSpawner, Assembly-CSharp
-        m_MethodName: StartSpawning
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1106336659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2937,19 +2891,7 @@ MonoBehaviour:
   m_CharacterLimit: 0
   m_OnEndEdit:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 138813507}
-        m_TargetAssemblyTypeName: CubeSpawner, Assembly-CSharp
-        m_MethodName: ChangeSpawnTime
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_OnSubmit:
     m_PersistentCalls:
       m_Calls: []

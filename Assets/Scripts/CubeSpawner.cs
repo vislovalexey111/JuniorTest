@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class CubeSpawner : MonoBehaviour
@@ -11,37 +12,54 @@ public class CubeSpawner : MonoBehaviour
      * editing text to make sure that each value is correct.
     */
     [SerializeField]
-    private TMP_InputField _uiSpeed, _uiSpawnTime, _uiDistance;
+    private Button _buttonStart, _buttonStop;
+
+    [SerializeField]
+    private TMP_InputField _inputFieldSpeed, _inputFieldSpawnTime, _inputFieldDistance;
 
     // General spawner parameters to validate and store UI Input Fields' values.
     private float _generalMoveSpeed, _generalMoveDistance, _spawnTime;
 
     /*
-     * Because of the task, we need to spawn cubes infinitely.
+     * According to the task, we need to spawn cubes infinitely.
      * For this task better to use object pool (especially on mobile devices).
     */
     private Queue<GameObject> _objectPool;
+    private Coroutine _cubeSpawnCoroutine;
 
     // Cashing all "Cube" components (instead of constantly calling GetComponent<Cube>() with each "spawn").
     private Dictionary<GameObject, Cube> _cubeComponents;
 
-    private Coroutine _cubeCoroutine;
-    private bool _failedToSetElements;
-
     private void Start()
     {
-        // Checking if all elements are set in the inspector.
-        _failedToSetElements = !_uiSpeed || !_uiSpawnTime || !_uiDistance || transform.childCount == 0;
-
-        if (_failedToSetElements)
+        // Validating script references.
+        if(transform.childCount == 0)
         {
-            Debug.LogError("Not all elemets are set in the inspector!");
+            Debug.LogError("This object doesn't have child \'Cubes\' to pool!");
+            return;
+        }
+        if (!_inputFieldSpeed
+            || !_inputFieldSpawnTime
+            || !_inputFieldDistance
+            || !_buttonStart
+            || !_buttonStop
+            )
+        {
+            Debug.LogError("Not all elemets are set for \'Spawner\' in the inspector!");
             return;
         }
 
-        _generalMoveDistance = ValidUIInputCheck(_uiDistance);
-        _generalMoveSpeed = ValidUIInputCheck(_uiSpeed);
-        _spawnTime = ValidUIInputCheck(_uiSpawnTime);
+        // Binding UI events with methods
+        _inputFieldSpeed.onEndEdit.AddListener(delegate { ChangeSpeed(); });
+        _inputFieldDistance.onEndEdit.AddListener(delegate { ChangeDistance(); });
+        _inputFieldSpawnTime.onEndEdit.AddListener(delegate { ChangeSpawnTime(); });
+        _buttonStart.onClick.AddListener(delegate { StartSpawn(); });
+        _buttonStop.onClick.AddListener(delegate { StopSpawn(); });
+
+        // Validating and assigning initial UI Input Fields' values
+        _generalMoveDistance = ValidUIInputCheck(_inputFieldDistance);
+        _generalMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
+        _spawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
 
         _cubeComponents = new Dictionary<GameObject, Cube>();
         _objectPool = new Queue<GameObject>();
@@ -53,21 +71,14 @@ public class CubeSpawner : MonoBehaviour
             _objectPool.Enqueue(obj);
         }
 
+        _buttonStop.interactable = false;
         Cube.OnDistanceEnd += ReturnToPool;
     }
-    
+
     private IEnumerator Spawn()
     {
-        if (_failedToSetElements)
-        {
-            Debug.LogError("Not all elemets are set in the inspector!");
-            yield break;
-        }
-
         while (true)
         {
-            yield return new WaitForSeconds(_spawnTime);
-
             if (_objectPool.Count > 0)
             {
                 GameObject obj = _objectPool.Dequeue();
@@ -76,6 +87,8 @@ public class CubeSpawner : MonoBehaviour
                 _cubeComponents[obj].MoveSpeed = _generalMoveSpeed;
                 _cubeComponents[obj].Distance = _generalMoveDistance;
             }
+
+            yield return new WaitForSeconds(_spawnTime);
         }
     }
 
@@ -83,12 +96,8 @@ public class CubeSpawner : MonoBehaviour
     private float ValidUIInputCheck(TMP_InputField inputField)
     {
         float tmp = float.Parse(inputField.text);
-
-        if (tmp <= 0.0f)
-        {
-            tmp = 1.0f;
-            inputField.text = tmp.ToString();
-        }
+        tmp = (tmp <= 0.0f) ? 1.0f : tmp;
+        inputField.text = tmp.ToString();
 
         return tmp;
     }
@@ -99,29 +108,23 @@ public class CubeSpawner : MonoBehaviour
         _objectPool.Enqueue(cube);
     }
 
-    public void StartSpawning()
+    private void StopSpawn()
     {
-        _cubeCoroutine = StartCoroutine(Spawn());
+        _buttonStart.interactable = true;
+        _buttonStop.interactable = false;
+
+        StopCoroutine(_cubeSpawnCoroutine);
     }
 
-    public void StopSpawning()
+    private void StartSpawn()
     {
-        if (_cubeCoroutine != null)
-            StopCoroutine(_cubeCoroutine);
+        _buttonStart.interactable = false;
+        _buttonStop.interactable = true;
+
+        _cubeSpawnCoroutine = StartCoroutine(Spawn());
     }
 
-    public void ChangeSpeed()
-    {
-        _generalMoveSpeed = ValidUIInputCheck(_uiSpeed);
-    }
-
-    public void ChangeDistance()
-    {
-        _generalMoveDistance = ValidUIInputCheck(_uiDistance);
-    }
-
-    public void ChangeSpawnTime()
-    {
-        _spawnTime = ValidUIInputCheck(_uiSpawnTime);
-    }
+    private void ChangeSpeed() => _generalMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
+    private void ChangeDistance() => _generalMoveDistance = ValidUIInputCheck(_inputFieldDistance);
+    private void ChangeSpawnTime() => _spawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
 }

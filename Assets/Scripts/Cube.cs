@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Cube : MonoBehaviour
 {
+    // Individual parameters for each cube that are assigned by Cube spawner
     private float _moveSpeed;
     public float MoveSpeed
     {
@@ -17,7 +18,6 @@ public class Cube : MonoBehaviour
         set { _distance = (value <= 0.0f) ? 1.0f : value; }
     }
 
-    // Individual parameters for each cube that are assigned by Cube spawner
     private float _currentPosition;
 
     // This action will be called to return object to pool
