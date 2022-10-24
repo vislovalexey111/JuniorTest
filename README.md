@@ -1,5 +1,5 @@
 # JuniorTest
-This project was made as a test for the position of Junior Unity Developer, assigned by the Playcapp Studio.
+This project was made as a test for the position of Junior Unity Developer, assigned by the Playclapp Studio.
 
 The task was:
  - The application must spawn 3D cubes, which then move with a certain speed over a certain distance.
