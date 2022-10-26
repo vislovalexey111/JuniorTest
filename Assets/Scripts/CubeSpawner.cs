@@ -19,19 +19,16 @@ public class CubeSpawner : MonoBehaviour
     private TMP_InputField _inputFieldSpeed, _inputFieldSpawnTime, _inputFieldDistance;
 
     // General spawner parameters to validate and store UI Input Fields' values.
-    private float _generalMoveSpeed, _generalMoveDistance, _spawnTime;
+    private float _uiMoveSpeed, _uiMoveDistance, _uiSpawnTime;
 
-    /*
-     * According to the task, we need to spawn cubes infinitely.
-     * For this task better to use object pool (especially on mobile devices).
-    */
+    // According to the task, we need to spawn cubes infinitely.
+    // For this task better to use object pool (especially on mobile devices).
     private Queue<GameObject> _objectPool;
 
-    // Cashing all "Cube" components (instead of constantly calling GetComponent<Cube>() with each "spawn").
-    private Dictionary<GameObject, Cube> _cubeComponents;
-
-    private Coroutine _cubeSpawnCoroutine;
-
+    // Cashing all "Cube" and "MeshRenderer" components (instead of constantly calling double GetComponent<>() with each "spawn")
+    // Enabling/disabling only components we need is about 1.5-2 times faster than original "SetActive" function
+    private Dictionary<GameObject, (Cube _cube, MeshRenderer _meshRenderer)> _cubeComponents;
+    
     private void Start()
     {
         // Validating script references.
@@ -51,7 +48,7 @@ public class CubeSpawner : MonoBehaviour
             return;
         }
 
-        // Binding UI events with methods
+        // Binding UI events with private methods
         _inputFieldSpeed.onEndEdit.AddListener(delegate { ChangeSpeed(); });
         _inputFieldDistance.onEndEdit.AddListener(delegate { ChangeDistance(); });
         _inputFieldSpawnTime.onEndEdit.AddListener(delegate { ChangeSpawnTime(); });
@@ -59,28 +56,31 @@ public class CubeSpawner : MonoBehaviour
         _buttonStop.onClick.AddListener(delegate { StopSpawn(); });
 
         // Validating and assigning initial UI Input Fields' values
-        _generalMoveDistance = ValidUIInputCheck(_inputFieldDistance);
-        _generalMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
-        _spawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
+        _uiMoveDistance = ValidUIInputCheck(_inputFieldDistance);
+        _uiMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
+        _uiSpawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
 
-        _cubeComponents = new Dictionary<GameObject, Cube>();
+        _cubeComponents = new Dictionary<GameObject, (Cube, MeshRenderer)>();
         _objectPool = new Queue<GameObject>();
         
         for (int i = 0; i < transform.childCount; i++)
         {
             GameObject obj = transform.GetChild(i).gameObject;
-            _cubeComponents.Add(obj, obj.GetComponent<Cube>());
+            obj.SetActive(true);
+            _cubeComponents.Add(obj,  (obj.GetComponent<Cube>(), obj.GetComponent<MeshRenderer>()));
+            SetActiveOvject(obj, false);
             _objectPool.Enqueue(obj);
         }
 
         _buttonStop.interactable = false;
         Cube.OnDistanceEnd += ReturnToPool;
     }
+
     // Checks if the UI value is valid and updates UI to show current valid value (if needed).
     private float ValidUIInputCheck(TMP_InputField inputField)
     {
         float tmp = float.Parse(inputField.text);
-        tmp = (tmp <= 0.0f) ? 1.0f : tmp;
+        tmp = (tmp <= 0.0009f) ? 1.0f : tmp;
         inputField.text = tmp.ToString();
 
         return tmp;
@@ -92,49 +92,24 @@ public class CubeSpawner : MonoBehaviour
         _objectPool.Enqueue(cube);
     }
 
-    private void StopSpawn()
+    // A better replacement to the original SetActive function according to the project requirements.
+    private void SetActiveOvject(GameObject gameObject, bool state)
     {
-        _buttonStart.interactable = true;
-        _buttonStop.interactable = false;
-
-        StopCoroutine(_cubeSpawnCoroutine);
+        _cubeComponents[gameObject]._cube.enabled = state;
+        _cubeComponents[gameObject]._meshRenderer.enabled = state;
     }
 
-    private void StartSpawn()
-    {
-        _buttonStart.interactable = false;
-        _buttonStop.interactable = true;
+    private void ChangeSpeed() => _uiMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
+    private void ChangeDistance() => _uiMoveDistance = ValidUIInputCheck(_inputFieldDistance);
+    private void ChangeSpawnTime() => _uiSpawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
 
-        _cubeSpawnCoroutine = StartCoroutine(Spawn());
-    }
-
-    private IEnumerator Spawn()
-    {
-        while (true)
-        {
-            if (_objectPool.Count > 0)
-            {
-                GameObject obj = _objectPool.Dequeue();
-                obj.SetActive(true);
-                obj.transform.localPosition = Vector3.zero;
-                _cubeComponents[obj].MoveSpeed = _generalMoveSpeed;
-                _cubeComponents[obj].Distance = _generalMoveDistance;
-            }
-
-            yield return new WaitForSeconds(_spawnTime);
-        }
-    }
-    
-    /*
-    // The coroutine replaced with the async/await
+    /*// Set of variables to control tasks
+    private bool _isCubeSpawnTaskComplete;
     private Task _cubeSpawnTask;
-    private bool _isCubeSpawnTaskComplete = false;
-
+    
     private void StopSpawn()
     {
         _isCubeSpawnTaskComplete = true;
-        Task.WaitAll(_cubeSpawnTask);
-
         _buttonStart.interactable = true;
         _buttonStop.interactable = false;
     }
@@ -143,35 +118,63 @@ public class CubeSpawner : MonoBehaviour
     {
         _buttonStart.interactable = false;
         _buttonStop.interactable = true;
-
         _isCubeSpawnTaskComplete = false;
-        _cubeSpawnTask = CubeSpawnTask();
-
-        // We need to start Task on the main thread because of the SetActive function
-        _cubeSpawnTask.Start(TaskScheduler.FromCurrentSynchronizationContext());
-    }
-
-    private Task CubeSpawnTask()
-    {
-        return new Task(async () =>
+        _cubeSpawnTask = new Task(async () =>
         {
             while (!_isCubeSpawnTaskComplete)
             {
                 if (_objectPool.Count > 0)
                 {
                     GameObject obj = _objectPool.Dequeue();
-                    obj.SetActive(true);
+                    SetActiveOvject(obj, true);
                     obj.transform.localPosition = Vector3.zero;
-                    _cubeComponents[obj].MoveSpeed = _generalMoveSpeed;
-                    _cubeComponents[obj].Distance = _generalMoveDistance;
+                    _cubeComponents[obj]._cube.MoveSpeed = _uiMoveSpeed;
+                    _cubeComponents[obj]._cube.Distance = _uiMoveDistance;
                 }
-
-                await Task.Delay((int)_spawnTime * 1000);
+                await Task.Delay((int)(_uiSpawnTime * 1000.0f));
             }
         });
+
+        // Because of the "SetActive" function, we need to run the task to spawn cubes on the main thread
+        _cubeSpawnTask.Start(TaskScheduler.FromCurrentSynchronizationContext());
     }
-    */
-    private void ChangeSpeed() => _generalMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
-    private void ChangeDistance() => _generalMoveDistance = ValidUIInputCheck(_inputFieldDistance);
-    private void ChangeSpawnTime() => _spawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
+    
+    // If we exit the app/play mode witout tasks been completed, we are going to complete scheduled tasks afterwards.
+    // Because of that, we need to change the flag manualy for task completion.
+    private void OnApplicationQuit()
+    {
+        _isCubeSpawnTaskComplete = true;
+    }*/
+
+    private Coroutine _cubeCoroutine;
+
+    private void StopSpawn()
+    {
+        StopCoroutine(_cubeCoroutine);
+        _buttonStart.interactable = true;
+        _buttonStop.interactable = false;
+    }
+
+    private void StartSpawn()
+    {
+        _buttonStart.interactable = false;
+        _buttonStop.interactable = true;
+        _cubeCoroutine = StartCoroutine(SpawnCubes());
+    }
+
+    private IEnumerator SpawnCubes()
+    {
+        while (true)
+        {
+            if (_objectPool.Count > 0)
+            {
+                GameObject obj = _objectPool.Dequeue();
+                SetActiveOvject(obj, true);
+                obj.transform.localPosition = Vector3.zero;
+                _cubeComponents[obj]._cube.MoveSpeed = _uiMoveSpeed;
+                _cubeComponents[obj]._cube.Distance = _uiMoveDistance;
+            }
+            yield return new WaitForSeconds(_uiSpawnTime);
+        }
+    }
 }
