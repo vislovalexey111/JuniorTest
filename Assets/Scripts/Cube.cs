@@ -4,31 +4,46 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
     // Individual parameters for each cube that are assigned by Cube spawner
+    private float _currentDistance;
+
+    private Vector3 _startPosition;
     private float _moveSpeed;
+    private float _distance;
+
+    public Vector3 StartPosition
+    {
+        get { return _startPosition; }
+        set { _startPosition = value; }
+    }
     public float MoveSpeed
     {
         get { return _moveSpeed; }
         set { _moveSpeed = (value <= 0.0f) ? 1.0f : value; }
     }
-
-    private float _distance;
     public float Distance
     {
         get { return _distance; }
         set { _distance = (value <= 0.0f) ? 1.0f : value; }
     }
 
-    private float _currentPosition;
-
     // This action will be called to return object to pool
-    public static Action<GameObject> OnDistanceEnd;
+    public Action<GameObject> OnDistanceEnd;
+
 
     private void FixedUpdate()
     {
-        _currentPosition = transform.localPosition.magnitude;
+        _currentDistance = Vector3.Distance(_startPosition, transform.localPosition);
         transform.Translate(_moveSpeed * Time.deltaTime * Vector3.forward);
         
-        if (_currentPosition >= _distance && OnDistanceEnd != null)
-            OnDistanceEnd(gameObject);
+        if (_currentDistance >= _distance)
+            OnDistanceEnd?.Invoke(gameObject);
+    }
+
+    public void SetParameters(Vector3 position, float moveSpeed, float distance)
+    {
+        StartPosition = position;
+        transform.localPosition = position;
+        MoveSpeed = moveSpeed;
+        Distance = distance;
     }
 }
