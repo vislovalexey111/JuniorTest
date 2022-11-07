@@ -17,8 +17,8 @@ public class ObjectPooler
 
     public ObjectPooler(int poolSize = 10)
     {
-        _poolSize = poolSize;
-        _objectPool = new Queue<GameObject>(poolSize);
+        _poolSize = (poolSize < 1) ? 1 : poolSize;
+        _objectPool = new Queue<GameObject>(_poolSize);
     }
 
     ~ObjectPooler()

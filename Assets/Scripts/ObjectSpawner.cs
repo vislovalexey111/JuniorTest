@@ -7,6 +7,9 @@ public class ObjectSpawner : MonoBehaviour
     [SerializeField]
     private GameObject _prefabTemplate;
 
+    [SerializeField]
+    private int _spawnCount = 10;
+
     // General parameters to validate and store UI Input Fields' values.
     private float _uiMoveSpeed, _uiMoveDistance, _uiSpawnTime;
 
@@ -38,7 +41,7 @@ public class ObjectSpawner : MonoBehaviour
             return;
         }
 
-        _objectPooler = new ObjectPooler();
+        _objectPooler = new ObjectPooler(_spawnCount);
         _cubeComponents = new Dictionary<GameObject, Cube>();
 
         for (int i = 0; i < _objectPooler.PoolSize; i++)

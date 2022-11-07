@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+[RequireComponent(typeof(ObjectSpawner))]
 public class UIWrapper : MonoBehaviour
 {
     /* While we editing text, we should not assign values from UI to "spawned" cube directly.
@@ -25,23 +26,23 @@ public class UIWrapper : MonoBehaviour
             || !_buttonStart
             || !_buttonStop)
         {
-            Debug.LogError("Not all elemets are set for \'Spawner\' in the inspector!");
+            Debug.LogError("Not all elemets are set for \'UI Wrapper\' in the inspector!");
             return;
         }
 
         // Binding UI events with private methods
-        _inputFieldSpeed.onEndEdit.AddListener(delegate { ChangeSpeed(); });
-        _inputFieldDistance.onEndEdit.AddListener(delegate { ChangeDistance(); });
-        _inputFieldSpawnTime.onEndEdit.AddListener(delegate { ChangeSpawnTime(); });
+        _inputFieldSpeed.onEndEdit.AddListener(delegate { SetSpeed(); });
+        _inputFieldDistance.onEndEdit.AddListener(delegate { SetDistance(); });
+        _inputFieldSpawnTime.onEndEdit.AddListener(delegate { SetSpawnTime(); });
         _buttonStart.onClick.AddListener(delegate { StartSpawn(); });
         _buttonStop.onClick.AddListener(StopSpawn);
 
         _objectSpawner = GetComponent<ObjectSpawner>();
 
         // Validating and assigning initial UI Input Fields' values
-        _objectSpawner.UiMoveDistance = ValidUIInputCheck(_inputFieldDistance);
-        _objectSpawner.UiMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
-        _objectSpawner.UiSpawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
+        SetSpeed();
+        SetDistance();
+        SetSpawnTime();
 
         _buttonStop.interactable = false;
     }
@@ -79,7 +80,7 @@ public class UIWrapper : MonoBehaviour
         _cubeSpawnCoroutine = StartCoroutine(_objectSpawner.SpawnCube());
     }
 
-    private void ChangeSpeed() => _objectSpawner.UiMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
-    private void ChangeDistance() => _objectSpawner.UiMoveDistance = ValidUIInputCheck(_inputFieldDistance);
-    private void ChangeSpawnTime() => _objectSpawner.UiSpawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
+    private void SetSpeed() => _objectSpawner.UiMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
+    private void SetDistance() => _objectSpawner.UiMoveDistance = ValidUIInputCheck(_inputFieldDistance);
+    private void SetSpawnTime() => _objectSpawner.UiSpawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
 }
