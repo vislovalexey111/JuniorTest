@@ -2,29 +2,30 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-[RequireComponent(typeof(ObjectSpawner))]
+[RequireComponent(typeof(ObjectPlacer))]
 public class UIWrapper : MonoBehaviour
 {
     /* While we editing text, we should not assign values from UI to "spawned" cube directly.
      * Better to store those values in spawner general parameters after we finished
      * editing text to make sure that each value is correct. */
-    [SerializeField]
-    private TMP_InputField _inputFieldSpeed, _inputFieldSpawnTime, _inputFieldDistance;
+    [SerializeField] private TMP_InputField _inputFieldSpeed;
+    [SerializeField] private TMP_InputField _inputFieldSpawnTime;
+    [SerializeField] private TMP_InputField _inputFieldDistance;
 
-    [SerializeField]
-    private Button _buttonStart, _buttonStop;
+    [SerializeField] private Button _buttonStart;
+    [SerializeField] private Button _buttonStop;
 
-    private ObjectSpawner _objectSpawner;
+    private ObjectPlacer _objectPlacer;
     private Coroutine _cubeSpawnCoroutine;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (!_inputFieldSpeed
-            || !_inputFieldSpawnTime
-            || !_inputFieldDistance
-            || !_buttonStart
-            || !_buttonStop)
+        if (_inputFieldSpeed is null
+            || _inputFieldSpawnTime is null
+            || _inputFieldDistance is null
+            || _buttonStart is null
+            || _buttonStop is null)
         {
             Debug.LogError("Not all elemets are set for \'UI Wrapper\' in the inspector!");
             return;
@@ -37,7 +38,7 @@ public class UIWrapper : MonoBehaviour
         _buttonStart.onClick.AddListener(delegate { StartSpawn(); });
         _buttonStop.onClick.AddListener(StopSpawn);
 
-        _objectSpawner = GetComponent<ObjectSpawner>();
+        _objectPlacer = GetComponent<ObjectPlacer>();
 
         // Validating and assigning initial UI Input Fields' values
         SetSpeed();
@@ -77,10 +78,10 @@ public class UIWrapper : MonoBehaviour
     {
         _buttonStart.interactable = false;
         _buttonStop.interactable = true;
-        _cubeSpawnCoroutine = StartCoroutine(_objectSpawner.SpawnCube());
+        _cubeSpawnCoroutine = StartCoroutine(_objectPlacer.PlaceCube());
     }
 
-    private void SetSpeed() => _objectSpawner.UiMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
-    private void SetDistance() => _objectSpawner.UiMoveDistance = ValidUIInputCheck(_inputFieldDistance);
-    private void SetSpawnTime() => _objectSpawner.UiSpawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
+    private void SetSpeed() => _objectPlacer.UiMoveSpeed = ValidUIInputCheck(_inputFieldSpeed);
+    private void SetDistance() => _objectPlacer.UiMoveDistance = ValidUIInputCheck(_inputFieldDistance);
+    private void SetSpawnTime() => _objectPlacer.UiSpawnTime = ValidUIInputCheck(_inputFieldSpawnTime);
 }

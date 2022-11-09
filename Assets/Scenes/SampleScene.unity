@@ -444,8 +444,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 138813508}
-  - component: {fileID: 138813507}
   - component: {fileID: 138813509}
+  - component: {fileID: 138813510}
+  - component: {fileID: 138813511}
   m_Layer: 0
   m_Name: Cubes
   m_TagString: Untagged
@@ -453,20 +454,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &138813507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138813506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73e3dd73652dc764387bdd47b8ccebb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _prefabTemplate: {fileID: 9091094829774393160, guid: 87a03c0a3a0d32a4ab04784a03800d5e,
-    type: 3}
 --- !u!4 &138813508
 Transform:
   m_ObjectHideFlags: 0
@@ -499,6 +486,33 @@ MonoBehaviour:
   _inputFieldDistance: {fileID: 889901363}
   _buttonStart: {fileID: 1106336658}
   _buttonStop: {fileID: 652141778}
+--- !u!114 &138813510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138813506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4118e9a880b3ebe48bb37a268643952d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _prefabTemplate: {fileID: 9091094829774393160, guid: 87a03c0a3a0d32a4ab04784a03800d5e,
+    type: 3}
+  _poolSize: 10
+--- !u!114 &138813511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 138813506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fd839ef9035c914fbc38bd35a0399b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &353444094
 GameObject:
   m_ObjectHideFlags: 0
