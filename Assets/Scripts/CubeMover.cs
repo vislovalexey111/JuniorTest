@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Cube : MonoBehaviour
+public class CubeMover : MonoBehaviour
 {
     // Individual parameters for each cube that are assigned by Cube spawner
     private float _currentDistance;
@@ -10,16 +10,21 @@ public class Cube : MonoBehaviour
     private float _moveSpeed;
     private float _distance;
 
+    #region Properties
     public float MoveSpeed
     {
         get { return _moveSpeed; }
         set { _moveSpeed = (value <= 0.0f) ? 1.0f : value; }
     }
+
     public float Distance
     {
         get { return _distance; }
         set { _distance = (value <= 0.0f) ? 1.0f : value; }
     }
+
+    public float CurrentDistance => _currentDistance;
+    #endregion
 
     // This action when the cube will reach the distance specified
     public Action<GameObject> OnDistanceEnd;

@@ -8,7 +8,7 @@ public class ObjectPool : MonoBehaviour
     [SerializeField] private int _poolSize = 10;
 
     private Queue<GameObject> _pool;
-    private Dictionary<GameObject, Cube> _cubeComponents;
+    private Dictionary<GameObject, CubeMover> _cubeComponents;
 
     public int Count => _pool.Count;
 
@@ -26,9 +26,8 @@ public class ObjectPool : MonoBehaviour
 
         for (int i = 0; i < _poolSize; i++)
         {
-            GameObject obj = Instantiate(_prefabTemplate);
-            obj.transform.parent = transform;
-            _cubeComponents.Add(obj, obj.GetComponent<Cube>());
+            GameObject obj = Instantiate(_prefabTemplate, transform);
+            _cubeComponents.Add(obj, obj.GetComponent<CubeMover>());
             ReturnToPool(obj);
         }
     }
